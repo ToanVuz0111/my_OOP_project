@@ -1,5 +1,6 @@
-package com.demo3.model.binary;
+package com.demo3.model.generic;
 
+import com.demo3.model.core.AbstractTree;
 import com.demo3.model.core.INode;
 import com.demo3.model.core.ITreeOperations;
 
@@ -9,15 +10,19 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * Cây Nhị Phân thuần túy (Pure Binary Tree) — KHÔNG phải BST.
- * - Mỗi node có tối đa 2 con (trái, phải).
- * - KHÔNG có thứ tự sắp xếp.
- * - Insert theo đúng spec đề: chỉ định rõ node cha.
+ * Cây Tổng Quát (Generic Tree).
+ * Mỗi node có thể có số lượng con không giới hạn.
  *
- * Implements ITreeOperations → service layer gọi qua interface.
+ * Implements ITreeOperations → service layer gọi qua interface,
+ * không cần biết đây là loại cây gì.
  */
-public class BinaryTree<T extends Comparable<T>> extends AbstractBinaryTree<T>
+public class GenericTree<T extends Comparable<T>> extends AbstractTree<T>
         implements ITreeOperations<T> {
+
+    @Override
+    public GenericNode<T> getRoot() {
+        return (GenericNode<T>) root;
+    }
 
     // ========================================================================
     // CREATE
@@ -31,8 +36,23 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractBinaryTree<T>
     }
 
     // ========================================================================
-    // INSERT — đúng spec đề: parentValue + newValue
-    // Từ chối giá trị trùng lặp (thống nhất với RBTree).
+    // FIND nội bộ — BFS duyệt toàn cây
+    // ========================================================================
+
+    public GenericNode<T> find(T value) {
+        if (root == null) return null;
+        Queue<GenericNode<T>> queue = new LinkedList<>();
+        queue.add(getRoot());
+        while (!queue.isEmpty()) {
+            GenericNode<T> cur = queue.poll();
+            if (cur.getValue().compareTo(value) == 0) return cur;
+            queue.addAll(cur.getChildrenList());
+        }
+        return null;
+    }
+
+    // ========================================================================
+    // INSERT — Từ chối giá trị trùng lặp (thống nhất với RBTree)
     // ========================================================================
 
     @Override
@@ -45,7 +65,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractBinaryTree<T>
             throw new IllegalArgumentException("Giá trị " + newValue + " đã tồn tại trong cây.");
         }
 
-        BinaryNode<T> newNode = new BinaryNode<>(newValue);
+        GenericNode<T> newNode = new GenericNode<>(newValue);
 
         // Cây rỗng → node mới thành root
         if (root == null) {
@@ -55,7 +75,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractBinaryTree<T>
         }
 
         recordStep("Tìm node cha có giá trị " + parentValue, 4, List.of(parentValue));
-        BinaryNode<T> parentNode = find(parentValue);
+        GenericNode<T> parentNode = find(parentValue);
         if (parentNode == null) {
             recordStep("Không tìm thấy node cha " + parentValue, 5, Collections.emptyList());
             throw new IllegalArgumentException(
@@ -63,75 +83,36 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractBinaryTree<T>
         }
         recordStep("Tìm thấy node cha " + parentValue, 5, List.of(parentValue));
 
-        if (parentNode.getLeft() == null) {
-            parentNode.setLeft(newNode);
-            newNode.setParent(parentNode);
-            recordStepWithSnapshot("Gắn " + newValue + " vào bên TRÁI của " + parentValue, 6,
-                    List.of(parentValue, newValue), deepCopy());
-        } else if (parentNode.getRight() == null) {
-            parentNode.setRight(newNode);
-            newNode.setParent(parentNode);
-            recordStepWithSnapshot("Gắn " + newValue + " vào bên PHẢI của " + parentValue, 6,
-                    List.of(parentValue, newValue), deepCopy());
-        } else {
-            recordStep("Node " + parentValue + " đã có đủ 2 con — hủy thao tác", 7,
-                    List.of(parentValue));
-            throw new IllegalStateException(
-                "Node " + parentValue + " đã có đủ 2 con, không thể thêm.");
-        }
+        parentNode.addChild(newNode);
+        recordStepWithSnapshot("Gắn " + newValue + " làm con của " + parentValue, 6,
+                List.of(parentValue, newValue), deepCopy());
     }
 
     // ========================================================================
-    // DELETE — thay bằng node sâu nhất (đúng kỹ thuật pure binary tree)
+    // DELETE
     // ========================================================================
 
     @Override
     public void delete(T value) {
-        if (root == null) return;
-
-        recordStep("Bắt đầu tìm node cần xóa: " + value, 1, List.of(value));
-
-        BinaryNode<T> targetNode = null;
-        BinaryNode<T> deepestNode = null;
-
-        Queue<BinaryNode<T>> queue = new LinkedList<>();
-        queue.add(getRoot());
-
-        while (!queue.isEmpty()) {
-            deepestNode = queue.poll();
-            if (deepestNode.getValue().compareTo(value) == 0) {
-                targetNode = deepestNode;
-            }
-            if (deepestNode.getLeft() != null) queue.add(deepestNode.getLeft());
-            if (deepestNode.getRight() != null) queue.add(deepestNode.getRight());
-        }
-
-        if (targetNode == null) {
+        recordStep("Tìm node cần xóa: " + value, 1, List.of(value));
+        GenericNode<T> node = find(value);
+        if (node == null) {
             recordStep("Không tìm thấy node " + value, 2, Collections.emptyList());
             return;
         }
-        recordStep("Tìm thấy node cần xóa: " + value, 2, List.of(value));
-        recordStep("Node sâu nhất: " + deepestNode.getValue(), 3,
-                List.of(deepestNode.getValue()));
 
-        // Copy giá trị node sâu nhất vào vị trí cần xóa
-        targetNode.setValue(deepestNode.getValue());
-        recordStep("Copy giá trị " + deepestNode.getValue() + " vào vị trí cần xóa", 4,
-                List.of(targetNode.getValue()));
-
-        // Cắt node sâu nhất khỏi cha
-        BinaryNode<T> parent = deepestNode.getParent();
-        if (parent != null) {
-            if (parent.getLeft() == deepestNode) parent.setLeft(null);
-            else parent.setRight(null);
+        recordStep("Tìm thấy node " + value, 2, List.of(value));
+        if (node == root) {
+            clear(); // Xóa root → bay cả cây
+            recordStepWithSnapshot("Xóa root → xóa toàn bộ cây", 3, Collections.emptyList(), deepCopy());
         } else {
-            root = null;
+            node.getParent().removeChild(node);
+            recordStepWithSnapshot("Xóa node " + value + " khỏi cây", 3, Collections.emptyList(), deepCopy());
         }
-        recordStepWithSnapshot("Xóa node sâu nhất khỏi cây", 5, Collections.emptyList(), deepCopy());
     }
 
     // ========================================================================
-    // UPDATE — đổi trực tiếp, không cần delete+insert (không có thứ tự)
+    // UPDATE — đổi trực tiếp, không cần delete+insert (không có thứ tự sắp xếp)
     // ========================================================================
 
     @Override
@@ -144,7 +125,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractBinaryTree<T>
             throw new IllegalArgumentException("Giá trị " + newValue + " đã tồn tại trong cây.");
         }
 
-        BinaryNode<T> node = find(oldValue);
+        GenericNode<T> node = find(oldValue);
         if (node == null) {
             recordStep("Không tìm thấy node " + oldValue, 2, Collections.emptyList());
             throw new IllegalArgumentException(
@@ -179,7 +160,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractBinaryTree<T>
     @Override
     public INode<T> searchNode(T value) {
         recordStep("Bắt đầu tìm kiếm " + value, 1, List.of(value));
-        BinaryNode<T> result = find(value);
+        GenericNode<T> result = find(value);
         if (result != null) {
             recordStep("Tìm thấy node " + value, 2, List.of(value));
         } else {
@@ -193,18 +174,19 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractBinaryTree<T>
     // ========================================================================
 
     @Override
-    public BinaryTree<T> deepCopy() {
-        BinaryTree<T> copy = new BinaryTree<>();
+    public GenericTree<T> deepCopy() {
+        GenericTree<T> copy = new GenericTree<>();
         copy.root = copyNode(getRoot(), null);
         return copy;
     }
 
-    private BinaryNode<T> copyNode(BinaryNode<T> node, BinaryNode<T> parentCopy) {
+    private GenericNode<T> copyNode(GenericNode<T> node, GenericNode<T> parentCopy) {
         if (node == null) return null;
-        BinaryNode<T> copy = new BinaryNode<>(node.getValue());
+        GenericNode<T> copy = new GenericNode<>(node.getValue());
         copy.setParent(parentCopy);
-        copy.setLeft(copyNode(node.getLeft(), copy));
-        copy.setRight(copyNode(node.getRight(), copy));
+        for (GenericNode<T> child : node.getChildrenList()) {
+            copy.getChildrenList().add(copyNode(child, copy));
+        }
         return copy;
     }
 }
