@@ -1,0 +1,185 @@
+/* ============================================================
+   dark.css — Dark Theme Overlay
+   Loaded ON TOP of app.css when dark mode is active.
+   Only overrides colors — layout stays unchanged.
+   ============================================================ */
+
+/* --- Main Menu --- */
+.main-menu {
+    -fx-background-color: linear-gradient(to bottom right, #0f172a, #1e293b);
+}
+
+.menu-title {
+    -fx-text-fill: #f1f5f9;
+}
+
+.menu-subtitle {
+    -fx-text-fill: #94a3b8;
+}
+
+.tree-select-button {
+    -fx-background-color: #1e293b;
+    -fx-border-color: #334155;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);
+}
+
+.tree-select-button:hover {
+    -fx-background-color: #334155;
+    -fx-border-color: #60a5fa;
+    -fx-effect: dropshadow(gaussian, rgba(96,165,250,0.2), 12, 0, 0, 3);
+}
+
+.tree-btn-name {
+    -fx-text-fill: #e2e8f0;
+}
+
+.tree-btn-desc {
+    -fx-text-fill: #64748b;
+}
+
+/* --- Buttons --- */
+.button-secondary {
+    -fx-background-color: #1e293b;
+    -fx-text-fill: #cbd5e1;
+    -fx-border-color: #334155;
+}
+
+.button-secondary:hover {
+    -fx-background-color: #334155;
+}
+
+.button-danger {
+    -fx-background-color: #1c1917;
+    -fx-text-fill: #f87171;
+    -fx-border-color: #991b1b;
+}
+
+.button-danger:hover {
+    -fx-background-color: #292524;
+}
+
+/* --- Visualization Root --- */
+.visualization-root {
+    -fx-background-color: #0f172a;
+}
+
+/* --- Header Bar --- */
+.header-bar {
+    -fx-background-color: #1e293b;
+    -fx-border-color: transparent transparent #334155 transparent;
+}
+
+.button-back {
+    -fx-text-fill: #60a5fa;
+}
+
+.button-back:hover {
+    -fx-background-color: #1e3a5f;
+}
+
+.header-title {
+    -fx-text-fill: #f1f5f9;
+}
+
+.button-theme {
+    -fx-background-color: #334155;
+    -fx-text-fill: #cbd5e1;
+}
+
+.button-theme:hover {
+    -fx-background-color: #475569;
+}
+
+/* --- Operation Form --- */
+.operation-form {
+    -fx-background-color: #1e293b;
+    -fx-border-color: transparent transparent #334155 transparent;
+}
+
+.form-label {
+    -fx-text-fill: #94a3b8;
+}
+
+/* --- Tree Panel --- */
+.tree-panel {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #334155;
+}
+
+/* --- Panel Cards --- */
+.panel-card {
+    -fx-background-color: #1e293b;
+    -fx-border-color: #334155;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0, 0, 1);
+}
+
+.panel-card-title {
+    -fx-text-fill: #64748b;
+}
+
+.status-label {
+    -fx-text-fill: #cbd5e1;
+}
+
+.traversal-order {
+    -fx-text-fill: #94a3b8;
+}
+
+.legend-label {
+    -fx-text-fill: #64748b;
+}
+
+/* --- Code Panel --- */
+.code-panel {
+    -fx-background-color: #0f172a;
+}
+
+.code-line {
+    -fx-text-fill: #94a3b8;
+}
+
+.code-line-highlight {
+    -fx-background-color: #1e3a5f;
+    -fx-text-fill: #60a5fa;
+}
+
+/* --- Playback Bar --- */
+.playback-bar {
+    -fx-background-color: #1e293b;
+    -fx-border-color: #334155 transparent transparent transparent;
+}
+
+.button-playback {
+    -fx-background-color: #334155;
+    -fx-text-fill: #cbd5e1;
+}
+
+.button-playback:hover {
+    -fx-background-color: #475569;
+}
+
+.speed-label {
+    -fx-text-fill: #64748b;
+}
+
+/* --- Scrollbar --- */
+.scroll-bar .thumb {
+    -fx-background-color: #475569;
+}
+
+/* --- TextField --- */
+.text-field {
+    -fx-background-color: #0f172a;
+    -fx-text-fill: #e2e8f0;
+    -fx-border-color: #334155;
+}
+
+.text-field:focused {
+    -fx-border-color: #60a5fa;
+}
+
+/* --- ComboBox --- */
+.combo-box {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #334155;
+}

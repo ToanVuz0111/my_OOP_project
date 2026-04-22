@@ -13,7 +13,7 @@ import java.util.List;
  * Ngoài ra cung cấp API ghi bước animation (startRecording / stopAndGetSteps)
  * để hỗ trợ step-by-step playback trên giao diện.
  */
-public interface ITreeOperations<T extends Comparable<T>> {
+public interface ITreeOperations<T extends Comparable<T>> extends ITree<T> {
 
     /**
      * CREATE: Xóa toàn bộ cây, tạo lại cây rỗng.
